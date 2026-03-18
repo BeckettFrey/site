@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beckett Frey — Developer Portfolio</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700&family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    html, body { height: 100%; margin: 0; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #0a0a0a;
+      color: #e8e4dc;
+      overflow-x: hidden;
+    }
+
+    :root {
+      --ink: #e8e4dc;
+      --paper: #0a0a0a;
+      --accent: #478be6;
+      --warm: #FFC335;
+      --rule: #2a2a2a;
+      --muted: #777;
+    }
+
+    .rule       { border-top: 1px solid var(--rule); }
+    .rule-thick { border-top: 3px double var(--rule); }
+    .rule-accent{ border-top: 2px solid var(--warm); }
+
+    .font-serif { font-family: 'Instrument Serif', serif; }
+    .font-mono  { font-family: 'IBM Plex Mono', monospace; }
+
+    .masthead-name {
+      font-family: 'Instrument Serif', serif;
+      font-size: clamp(3.5rem, 10vw, 8rem);
+      line-height: 0.9;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+    }
+
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes slideRule {
+      from { transform: scaleX(0); }
+      to   { transform: scaleX(1); }
+    }
+    @keyframes tickerScroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    .anim-rise { opacity: 0; animation: riseIn  0.7s cubic-bezier(0.22,1,0.36,1) forwards; }
+    .anim-fade { opacity: 0; animation: fadeIn  0.6s ease both; }
+    .anim-rule { transform-origin: left; transform: scaleX(0); animation: slideRule 0.8s cubic-bezier(0.22,1,0.36,1) forwards; }
+
+    .delay-1 { animation-delay: 0.10s; }
+    .delay-2 { animation-delay: 0.20s; }
+    .delay-3 { animation-delay: 0.35s; }
+    .delay-4 { animation-delay: 0.50s; }
+    .delay-5 { animation-delay: 0.65s; }
+    .delay-6 { animation-delay: 0.80s; }
+
+    .ticker-track { display: flex; width: max-content; animation: tickerScroll 35s linear infinite; }
+    .ticker-track:hover { animation-play-state: paused; }
+
+    .project-card {
+      border-left: 2px solid var(--rule);
+      padding-left: 1rem;
+      transition: border-color 0.3s ease, transform 0.3s ease;
+    }
+    .project-card:hover { border-left-color: var(--accent); transform: translateX(4px); }
+
+    .philosophy-block {
+      position: relative;
+      border: 1px solid var(--rule);
+      background: #0f0f0f;
+    }
+    .philosophy-block::before {
+      content: '▌';
+      position: absolute;
+      top: -1px; left: 1.5rem;
+      background: var(--paper);
+      padding: 0 0.5rem;
+      color: var(--accent);
+      font-size: 1rem;
+      transform: translateY(-50%);
+    }
+
+    .skill-pill {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border: 1px solid var(--rule);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      transition: all 0.25s ease;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .skill-pill:hover { border-color: var(--accent); color: var(--accent); background: rgba(200,255,0,0.05); }
+
+    .edition-badge {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .section-enter {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .section-enter.visible { opacity: 1; transform: translateY(0); }
+
+    a.contact-link {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+    a.contact-link:hover { border-bottom-color: var(--accent); }
+
+    @media (min-width: 768px) {
+      .masthead-name { font-size: clamp(4rem, 8vw, 9rem); }
+    }
+
+    /* ── CHAT PANEL ── */
+    @keyframes chatSlideUp {
+      from { opacity: 0; transform: translateY(12px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    #chat-panel {
+      position: fixed; bottom: 24px; right: 24px;
+      width: 340px; max-height: 480px; z-index: 200;
+      display: none; flex-direction: column;
+      border-radius: 12px; overflow: hidden;
+      border: 1px solid #2a2a2a;
+      background: #0f0f0f;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+      animation: chatSlideUp 0.22s cubic-bezier(0.4,0,0.2,1) both;
+    }
+    #chat-panel.open { display: flex; }
+    #chat-messages {
+      flex: 1; overflow-y: auto; padding: 14px;
+      display: flex; flex-direction: column; gap: 10px;
+      scrollbar-width: thin; scrollbar-color: #2a2a2a transparent;
+    }
+    .bubble {
+      max-width: 88%; padding: 9px 13px; border-radius: 10px;
+      font-size: 12px; line-height: 1.55;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+    .bubble-assistant {
+      align-self: flex-start;
+      background: #161616; border: 1px solid #2a2a2a;
+      color: var(--ink); border-bottom-left-radius: 3px;
+    }
+    .bubble-assistant a { color: var(--accent); }
+    .bubble-user {
+      align-self: flex-end;
+      background: rgba(200,255,0,0.08); border: 1px solid rgba(200,255,0,0.2);
+      color: var(--ink); border-bottom-right-radius: 3px;
+    }
+    .typing-dots span {
+      display: inline-block; width: 4px; height: 4px; border-radius: 50%;
+      background: var(--accent); margin: 0 2px;
+      animation: typingBounce 1.1s infinite; opacity: 0.5;
+    }
+    .typing-dots span:nth-child(2) { animation-delay: 0.18s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.36s; }
+    @keyframes typingBounce {
+      0%,60%,100% { transform: translateY(0); }
+      30% { transform: translateY(-5px); }
+    }
+    #chat-toggle {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+      cursor: pointer; transition: all 0.2s;
+    }
+    #chat-toggle:hover { color: var(--accent) !important; border-color: var(--accent) !important; }
+    #chat-toggle.active { color: var(--accent) !important; border-color: var(--accent) !important; }
+  </style>
+ </head>
+ <body class="h-full">
+  <div id="app-wrapper" class="w-full h-full overflow-auto" style="background: var(--paper);">
+
+   <!-- TOP BAR -->
+   <header class="w-full rule-accent anim-rule delay-1" style="padding: 0.75rem 0;">
+    <div class="max-w-5xl mx-auto px-6 flex justify-between items-center">
+     <span class="edition-badge anim-fade delay-2"><span id="header-location">Madison, WI</span> — <span id="edition-date"></span></span>
+     <div class="flex items-center gap-4">
+      <span class="edition-badge anim-fade delay-2" id="header-role"></span>
+      <button id="chat-toggle" onclick="toggleChat()"
+       class="anim-fade delay-2 px-3 py-1 border edition-badge"
+       style="border-color: var(--rule); color: var(--muted); background: none;">
+       Ask
+      </button>
+     </div>
+    </div>
+   </header>
+
+   <!-- HERO -->
+   <section class="max-w-5xl mx-auto px-6 pt-12 pb-8">
+    <p class="font-mono text-xs tracking-widest uppercase anim-fade delay-2" id="hero-tagline" style="color: var(--accent);"></p>
+    <h1 class="masthead-name mt-3 anim-rise delay-3" id="hero-name"></h1>
+    <div class="rule-thick mt-6 anim-rule delay-4"></div>
+    <p class="mt-6 text-lg leading-relaxed max-w-2xl anim-fade delay-5" id="hero-bio" style="color: var(--ink);"></p>
+    <div class="mt-6 flex gap-4 anim-fade delay-6" id="hero-links"></div>
+   </section>
+
+   <!-- SKILLS TICKER -->
+   <section class="rule overflow-hidden py-3 section-enter" style="background: #0d0d0d;">
+    <div class="ticker-track" aria-label="Skills and tools">
+     <div class="flex gap-3 pr-3" id="ticker-1"></div>
+     <div class="flex gap-3 pr-3" id="ticker-2"></div>
+    </div>
+   </section>
+
+   <!-- PROJECTS -->
+   <section class="max-w-5xl mx-auto px-6 py-12 section-enter">
+    <div class="flex items-baseline gap-4 mb-8">
+     <h2 class="font-serif text-3xl italic" style="color: var(--ink);">Dispatches</h2>
+     <span class="font-mono text-xs tracking-wider uppercase" style="color: var(--muted);">Selected Work</span>
+     <div class="flex-1 rule" style="margin-top: 2px;"></div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="projects-grid"></div>
+   </section>
+
+   <!-- PHILOSOPHY -->
+   <section class="max-w-5xl mx-auto px-6 py-12 section-enter">
+    <div class="philosophy-block p-8">
+     <h3 class="font-mono text-xs tracking-widest uppercase mb-4" id="philosophy-title" style="color: var(--accent);"></h3>
+     <p class="font-serif text-xl md:text-2xl italic leading-relaxed" id="philosophy-body" style="color: var(--ink);"></p>
+     <div class="rule mt-6 pt-4">
+      <p class="font-mono text-xs" id="philosophy-footnote" style="color: var(--muted);"></p>
+     </div>
+    </div>
+   </section>
+
+   <!-- OFF-GRID / PERSONAL -->
+   <section class="max-w-5xl mx-auto px-6 py-12 section-enter">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+     <div class="md:col-span-1">
+      <h2 class="font-serif text-3xl italic mb-1" style="color: var(--ink);">Off-Grid</h2>
+      <div class="rule-accent mt-2 mb-4" style="width: 3rem;"></div>
+     </div>
+     <div class="md:col-span-2">
+      <p class="text-base leading-relaxed" id="offgrid-body" style="color: var(--ink); opacity: 0.8;"></p>
+     </div>
+    </div>
+   </section>
+
+   <!-- CONTACT / FOOTER -->
+   <footer class="rule section-enter" style="background: #0d0d0d;">
+    <div class="max-w-5xl mx-auto px-6 py-12">
+     <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+      <div>
+       <h2 class="font-serif text-3xl italic" style="color: var(--ink);">Signal</h2>
+       <p class="font-mono text-xs mt-2" style="color: var(--muted);">Let's build something.</p>
+      </div>
+      <div class="md:col-span-2 flex flex-wrap gap-6" id="footer-links"></div>
+     </div>
+     <div class="rule mt-8 pt-4 flex justify-between items-center">
+      <span class="edition-badge">© <span id="footer-year"></span> <span id="footer-name"></span></span>
+      <span class="edition-badge" id="footer-location"></span>
+     </div>
+    </div>
+   </footer>
+
+  </div>
+
+  <!-- CHAT PANEL -->
+  <div id="chat-panel">
+   <div class="flex items-center justify-between px-4 py-3" style="border-bottom: 1px solid #2a2a2a;">
+    <span class="edition-badge" style="color: var(--accent);">Ask about Beckett</span>
+    <button onclick="toggleChat()" style="background:none;border:none;cursor:pointer;color:#777;padding:2px;" onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='#777'">
+     <i data-lucide="x" style="width:13px;height:13px;"></i>
+    </button>
+   </div>
+   <div id="chat-messages"></div>
+   <div style="border-top:1px solid #2a2a2a; padding:10px 14px; display:flex; align-items:center; gap:8px;">
+    <input id="chat-input" type="text" placeholder="Ask anything..." autocomplete="off"
+     style="flex:1;background:transparent;border:none;outline:none;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink);caret-color:var(--accent);">
+    <button onclick="submitChat()" style="background:none;border:none;cursor:pointer;color:var(--accent);padding:2px;">
+     <i data-lucide="send" style="width:13px;height:13px;"></i>
+    </button>
+   </div>
+  </div>
+
+  <script>
+    // ── CONFIG ──
+    const CONFIG = {
+      name:     'Beckett Frey',
+      location: 'Madison, WI',
+      role:     'AI Engineer',
+
+      hero: {
+        tagline: 'Building things end-to-end',
+        bio:     "I'm Beckett — CS grad from UW-Milwaukee, building in the AI/ML space with a growing focus on DevOps and developer experience. I care about the infrastructure layer: pipelines that don't lie, tooling that stays out of the way, and security built in from the start. Open to freelance and anything interesting.",
+      },
+
+      philosophy: {
+        title:    'On Continuous Autonomy',
+        body:     'The software development lifecycle is being renegotiated. Not because AI is magic, but because the tools are becoming less reliant on humans. I build infrastructure for that transition — pipelines that know the difference between human and agent authorship, tooling that earns trust before it earns autonomy. Not automation for its own sake, but <em style="color: var(--warm);">continuous autonomy</em>: the kind that compounds when the foundation is solid.',
+        footnote: 'Treat security as a constraint, not an afterthought. Build tooling that earns its place in the workflow.',
+      },
+
+      offgrid: 'Cooking, fitness, chess — and a lot of audiobooks. The same qualities that make a good training block make a good project: consistency, patience, and knowing when to push through and when to step back. Currently working through Lonesome Dove. The discipline transfers.',
+
+      links: {
+        github:   'https://github.com/BeckettFrey',
+        linkedin: 'https://www.linkedin.com/in/beckettfrey/',
+        resume:   'https://raw.githubusercontent.com/beckettfrey/latex-resume/main/resume.pdf',
+      },
+
+      skills: [
+        'Python', 'Bash', 'TypeScript', 'JavaScript', 'SQL',
+        'Docker', 'GitHub Actions', 'AWS', 'Modal', 'Vercel',
+        'PyTorch', 'Anthropic SDK', 'LangGraph', 'LlamaIndex',
+        'Django', 'Node.js', 'React', 'Next.js',
+        'Pytest', 'Vitest', 'Git',
+      ],
+
+      projects: [
+        {
+          tag: 'Startup', title: 'Continuous Autonomy',
+          problem: 'The SDLC needs new primitives for a world where agents are collaborators. Continuous Autonomy is infrastructure rethinking how software gets built, reviewed, and shipped.',
+          detail: 'Early-Stage · DevOps · Agentic Systems',
+          repo: '', demo: '',
+        },
+        {
+          tag: 'Research', title: 'Waisman Center — VoxKit',
+          problem: 'Clinical researchers need production-grade audio ML without the engineering overhead. VoxKit bridges state-of-the-art models and research workflows, with PHI safeguards built in.',
+          detail: 'Python · CI/CD · GitHub Actions · PHI Security',
+          repo: '', demo: '',
+        },
+        {
+          tag: 'DevEx', title: 'AI-Assisted Dev Tools',
+          problem: 'Good developer tooling should disappear. This suite — Bonsai, Headerizer, CodeLibre, Doc Weaver — handles the tedious parts of the dev workflow so engineers can stay in flow.',
+          detail: 'Python · LangGraph · GitHub Actions · Pytest',
+          repo: '', demo: '',
+        },
+        {
+          tag: 'ML Tools', title: 'SpeechMine',
+          problem: 'Raw recordings are useless without structure. SpeechMine converts audio into searchable, speaker-labeled transcripts, replacing labor-intensive manual formatting workflows where an idea of the what was said is known.',
+          detail: 'Python · Faster-Whisper · PyAnnote · RapidFuzz',
+          repo: '', demo: '',
+        },
+        {
+          tag: 'Open Source', title: 'ContextCaddy',
+          problem: 'Managing context for AI workflows is tedious. This Chrome extension organizes text into cabinets with smart search backed by a configurable MCP knowledge server.',
+          detail: 'Python · LlamaIndex · FastMCP · JavaScript',
+          repo: '', demo: '',
+        },
+        {
+          tag: 'Team', title: 'Hyperchess',
+          problem: 'Trained 25 object detection models via synthetic data pipelines achieving 99%+ accuracy. Scaled training on Modal serverless compute to overcome local hardware limits. It may have never materialized but I learned a ton about Machine Learning from the founder.',
+          detail: 'Python · PyTorch · Modal · LangGraph',
+          repo: '', demo: '',
+        },
+      ],
+    };
+
+    function applyConfig() {
+      // Header
+      const headerLoc = document.getElementById('header-location');
+      if (headerLoc) headerLoc.textContent = CONFIG.location;
+      const headerRole = document.getElementById('header-role');
+      if (headerRole) headerRole.textContent = CONFIG.role;
+
+      // Hero
+      document.getElementById('hero-tagline').textContent = CONFIG.hero.tagline;
+      document.getElementById('hero-name').textContent    = CONFIG.name;
+      document.getElementById('hero-bio').textContent     = CONFIG.hero.bio;
+
+      // Hero links
+      document.getElementById('hero-links').innerHTML = `
+    <a href="${CONFIG.links.github}" target="_blank" class="contact-link font-mono text-xs flex items-center gap-1.5">
+      <i data-lucide="github" style="width:13px;height:13px;"></i> GitHub
+    </a>
+    <a href="${CONFIG.links.linkedin}" target="_blank" class="contact-link font-mono text-xs flex items-center gap-1.5">
+      <i data-lucide="linkedin" style="width:13px;height:13px;"></i> LinkedIn
+    </a>
+    <a href="${CONFIG.links.resume}" target="_blank" class="contact-link font-mono text-xs flex items-center gap-1.5">
+      <i data-lucide="file-text" style="width:13px;height:13px;"></i> Resume
+    </a>`;
+
+      // Philosophy
+      document.getElementById('philosophy-title').textContent = CONFIG.philosophy.title;
+      document.getElementById('philosophy-body').innerHTML    = CONFIG.philosophy.body;
+      document.getElementById('philosophy-footnote').textContent = CONFIG.philosophy.footnote;
+
+      // Off-grid
+      document.getElementById('offgrid-body').textContent = CONFIG.offgrid;
+
+      // Footer
+      const footerName = document.getElementById('footer-name');
+      if (footerName) footerName.textContent = CONFIG.name;
+      const footerLoc = document.getElementById('footer-location');
+      if (footerLoc) footerLoc.textContent = CONFIG.location;
+
+      // Footer links
+      document.getElementById('footer-links').innerHTML = `
+    <a href="${CONFIG.links.github}" target="_blank" class="contact-link font-mono text-sm flex items-center gap-2">
+      <i data-lucide="github" style="width:16px;height:16px;"></i> GitHub
+    </a>
+    <a href="${CONFIG.links.linkedin}" target="_blank" class="contact-link font-mono text-sm flex items-center gap-2">
+      <i data-lucide="linkedin" style="width:16px;height:16px;"></i> LinkedIn
+    </a>
+    <a href="${CONFIG.links.resume}" target="_blank" class="contact-link font-mono text-sm flex items-center gap-2">
+      <i data-lucide="file-text" style="width:16px;height:16px;"></i> Resume
+    </a>`;
+    }
+
+    // ── RENDER ──
+    function renderTicker() {
+      const html = CONFIG.skills.map(s => `<span class="skill-pill">${s}</span>`).join('');
+      document.getElementById('ticker-1').innerHTML = html;
+      document.getElementById('ticker-2').innerHTML = html;
+    }
+
+    function renderProjects() {
+      document.getElementById('projects-grid').innerHTML = CONFIG.projects.map(p => {
+        const links = [];
+        if (p.repo) links.push(`<a href="${p.repo}" target="_blank" class="contact-link font-mono" style="font-size:0.65rem;">Repo ↗</a>`);
+        if (p.demo) links.push(`<a href="${p.demo}" target="_blank" class="contact-link font-mono" style="font-size:0.65rem;">Demo ↗</a>`);
+        return `
+          <article class="project-card">
+            <span class="font-mono text-xs tracking-wider uppercase" style="color:var(--accent);">${p.tag}</span>
+            <h3 class="font-serif text-xl mt-1 mb-2" style="color:var(--ink);">${p.title}</h3>
+            <p class="text-sm leading-relaxed mb-3" style="color:var(--ink);opacity:0.75;">${p.problem}</p>
+            <p class="font-mono text-xs mb-3" style="color:var(--muted);">${p.detail}</p>
+            ${links.length ? `<div class="flex gap-4">${links.join('')}</div>` : ''}
+          </article>`;
+      }).join('');
+    }
+
+    // ── DATE ──
+    const now = new Date();
+    document.getElementById('edition-date').textContent = now.toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+    document.getElementById('footer-year').textContent = now.getFullYear();
+
+    // ── SCROLL REVEAL ──
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); revealObserver.unobserve(e.target); }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.section-enter').forEach(el => revealObserver.observe(el));
+
+    // ── CHAT ──
+    const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+
+    const tree = [
+      { match: /\b(hi|hello|hey|sup|yo)\b/i, replies: [
+        "Hey! Ask me anything about Beckett — his projects, stack, or how to reach him.",
+        "Hi there. What would you like to know about Beckett?",
+        "Hey. Ask away."
+      ]},
+      { match: /who (is|are) beckett|tell me about (him|beckett)|about (him|beckett)/i, replies: [
+        "Beckett is a full-stack developer from Madison, WI. BS grad from UW-Milwaukee, builds things end-to-end — web apps, agent tooling, CLIs — and is open to freelance and creative work.",
+        "He's a developer who builds across the full stack. Graduated from UW-Milwaukee, based in Madison. Strong focus on Python, TypeScript, and AI tooling.",
+        "Beckett builds things end-to-end. Whether that's a WebSocket API, a mobile app, or an LLM pipeline — he sees it through from idea to deployment."
+      ]},
+      { match: /stack|tech|language|tool/i, replies: [
+        "Python and TypeScript are his main languages. For agent work: LangGraph, LangChain, OpenAI API, LlamaIndex. Web side: React, Node, FastAPI, Docker.",
+        "Core stack: Python, TypeScript, React, FastAPI, Docker. AI tooling: LangGraph, LangChain, LlamaIndex, OpenAI API."
+      ]},
+      { match: /\b(ai|ml|llm|agent|langchain|langgraph|rag)\b/i, replies: [
+        "A big focus for him. He builds agent pipelines with LangGraph, RAG systems, and LLM-powered CLIs. Doc Weaver and CodeLibre are the clearest examples.",
+        "LLM tooling is where a lot of his recent energy has gone — agents, RAG pipelines, CLI assistants."
+      ]},
+      { match: /project|built|work|show me|portfolio/i, replies: [
+        "Featured: Doc Weaver (LLM doc generator), Chess Link (WebSocket chess API), Rod Royale (mobile fishing app), Context Caddy (Chrome + MCP backend), CodeLibre (git CLI assistant). All open source.",
+        "He's shipped a range — from a real-time chess API to an LLM-powered doc generator to a mobile fishing app. Ask about any of them."
+      ]},
+      { match: /doc.?weaver/i, replies: [
+        "Doc Weaver is a CLI and agent toolkit that fills markdown templates with LLM-generated content, enforcing character-length constraints. Python + LangGraph + OpenAI API.",
+        "It's a document generation agent — you give it a template, it fills in the blanks using an LLM while keeping everything within defined limits."
+      ]},
+      { match: /chess.?link/i, replies: [
+        "Chess Link is a real-time WebSocket chess API. TypeScript, Node, Express, Jest, Docker. Focus was multiplayer state management and reconnection handling.",
+        "A multiplayer chess backend built to explore WebSocket patterns and game state. Deployed with Docker."
+      ]},
+      { match: /rod.?royale/i, replies: [
+        "Rod Royale is a mobile fishing app — share catches, mark spots on a map, compete on leaderboards. React Native frontend, FastAPI backend, MongoDB, Docker.",
+        "A community fishing app with photo uploads, location tracking, and leaderboards. Full stack: React Native, Python, FastAPI, MongoDB."
+      ]},
+      { match: /context.?caddy/i, replies: [
+        "Context Caddy is a Chrome extension for storing and searching text snippets, synced to an MCP backend powered by LlamaIndex.",
+        "It's a browser extension that organizes context for AI workflows — FastMCP + LlamaIndex + JavaScript."
+      ]},
+      { match: /codelibre/i, replies: [
+        "CodeLibre is a local-first CLI assistant — a lower-cost alternative to tools like Claude Code. Starts with commit automation, expands into RAG-powered code help. Python + LangGraph.",
+        "An open-source, git-integrated dev assistant. Lightweight, local-first, built with LangGraph."
+      ]},
+      { match: /hyprchs/i, replies: [
+        "Hyprchs is a collaborative AI chess tutor. Beckett contributes to the ML side under a mentor — personalized feedback using LangGraph and Modal.",
+      ]},
+      { match: /hire|available|freelance|collab|work with|partner/i, replies: [
+        "He's open to freelance, creative partnerships, or anything that feels like a good fit. Best starting point is <a href='https://www.linkedin.com/in/beckettfrey/' target='_blank'>LinkedIn</a>.",
+        "Open to collaborations. Drop him a message on <a href='https://www.linkedin.com/in/beckettfrey/' target='_blank'>LinkedIn</a>."
+      ]},
+      { match: /contact|reach|find|link|social|email/i, replies: [
+        "<a href='https://github.com/BeckettFrey' target='_blank'>GitHub</a> · <a href='https://www.linkedin.com/in/beckettfrey/' target='_blank'>LinkedIn</a> · <a href='https://github.com/beckettfrey/latex-resume/releases/latest/download/resume.pdf' target='_blank'>Resume</a>",
+        "Best places: <a href='https://www.linkedin.com/in/beckettfrey/' target='_blank'>LinkedIn</a> for outreach, <a href='https://github.com/BeckettFrey' target='_blank'>GitHub</a> to see the code."
+      ]},
+      { match: /hobby|outside|cook|chess|fitness|book|read|personal/i, replies: [
+        "Outside of code: cooking, fitness, and chess. Also into audiobooks — currently working through Lonesome Dove.",
+        "He's into cooking, staying active, and chess. Big audiobook listener too."
+      ]},
+      { match: /school|education|degree|university|uwm|milwaukee|grad/i, replies: [
+        "BS from UW-Milwaukee.", "He graduated from UW-Milwaukee with a BS."
+      ]},
+      { match: /madison|where|location|based|live/i, replies: [
+        "Based in Madison, Wisconsin.", "Madison, WI."
+      ]},
+      { match: /thank/i, replies: ["Of course.", "Happy to help.", "Anytime."] },
+    ];
+
+    function getChatResponse(input) {
+      for (const node of tree) {
+        if (node.match.test(input)) return pick(node.replies);
+      }
+      return pick([
+        "Not sure on that one. Try asking about his projects, stack, or how to reach him.",
+        "I'd check his <a href='https://www.linkedin.com/in/beckettfrey/' target='_blank'>LinkedIn</a> for anything more specific."
+      ]);
+    }
+
+    const chatMessages = document.getElementById('chat-messages');
+    const chatInput    = document.getElementById('chat-input');
+    let chatOpen = false;
+
+    function addBubble(text, role) {
+      const div = document.createElement('div');
+      div.className = `bubble bubble-${role}`;
+      div.innerHTML = text;
+      chatMessages.appendChild(div);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+      return div;
+    }
+
+    function toggleChat() {
+      const panel  = document.getElementById('chat-panel');
+      const toggle = document.getElementById('chat-toggle');
+      chatOpen = !chatOpen;
+      panel.classList.toggle('open', chatOpen);
+      toggle.classList.toggle('active', chatOpen);
+      if (chatOpen) {
+        if (!chatMessages.children.length) {
+          addBubble(pick([
+            "Ask me anything about Beckett — projects, stack, background, or how to reach him.",
+            "What would you like to know about Beckett?"
+          ]), 'assistant');
+        }
+        setTimeout(() => chatInput.focus(), 50);
+      }
+    }
+
+    function submitChat() {
+      const text = chatInput.value.trim();
+      if (!text) return;
+      chatInput.value = '';
+      addBubble(text, 'user');
+
+      const typing = document.createElement('div');
+      typing.className = 'bubble bubble-assistant typing-dots';
+      typing.innerHTML = '<span></span><span></span><span></span>';
+      chatMessages.appendChild(typing);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      setTimeout(() => {
+        typing.remove();
+        addBubble(getChatResponse(text), 'assistant');
+      }, 550 + Math.random() * 350);
+    }
+
+    chatInput.addEventListener('keydown', e => { if (e.key === 'Enter') submitChat(); });
+
+    // ── INIT ──
+    applyConfig();
+    renderTicker();
+    renderProjects();
+    lucide.createIcons();
+  </script>
+ </body>
+</html>
