@@ -70,6 +70,7 @@
     .delay-4 { animation-delay: 0.50s; }
     .delay-5 { animation-delay: 0.65s; }
     .delay-6 { animation-delay: 0.80s; }
+    .delay-7 { animation-delay: 0.95s; }
 
     .ticker-track { display: flex; width: max-content; animation: tickerScroll 35s linear infinite; }
     .ticker-track:hover { animation-play-state: paused; }
@@ -223,7 +224,7 @@
    </section>
 
    <!-- SKILLS TICKER -->
-   <section class="rule overflow-hidden py-3 section-enter" style="background: #0d0d0d;">
+   <section class="rule overflow-hidden py-3 anim-fade delay-7" style="background: #0d0d0d; -webkit-mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%); mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);">
     <div class="ticker-track" aria-label="Skills and tools">
      <div class="flex gap-3 pr-3" id="ticker-1"></div>
      <div class="flex gap-3 pr-3" id="ticker-2"></div>
