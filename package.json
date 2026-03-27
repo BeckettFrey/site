@@ -1,0 +1,7 @@
+{
+  "name": "site",
+  "version": "1.0.0",
+  "description": "Personal website",
+  "author": "Beckett Frey <code@beckettfrey.com>",
+  "private": true
+}
