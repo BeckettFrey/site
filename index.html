@@ -29,7 +29,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     height: 100vh;
-    padding: 54px 54px 24px;
+    padding: 54px;
     gap: 0;
   }
 
@@ -47,6 +47,179 @@
       radial-gradient(ellipse at 70% 60%, #1a2530 0%, transparent 60%),
       #0a0a0a;
   }
+
+  /* media layer: poster frame until play, then video */
+  .hero-media {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.6) saturate(1.05);
+    z-index: 0;
+  }
+
+  /* scrim keeps light type legible over a bright frame */
+  .hero-scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse at 50% 45%, rgba(10, 16, 22, 0.55) 0%, transparent 70%),
+      linear-gradient(180deg, rgba(10, 10, 10, 0.5) 0%, rgba(10, 10, 10, 0.15) 45%, rgba(10, 10, 10, 0.7) 100%);
+  }
+
+  .video-panel > .name-block,
+  .video-panel > .socials { position: relative; z-index: 2; }
+
+  .media-toggle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+    width: clamp(72px, 7vw, 104px);
+    height: clamp(72px, 7vw, 104px);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 50%;
+    background: rgba(10, 10, 10, 0.42);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+    color: #ffffff;
+    cursor: pointer;
+    transition: background 0.18s ease, opacity 0.25s ease;
+  }
+  .media-toggle:hover { background: rgba(10, 10, 10, 0.62); }
+  .media-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+  .media-toggle svg { width: 34%; height: 34%; }
+  /* recede once the video is running, return on hover or focus */
+  .media-toggle[aria-pressed="true"] { opacity: 0; }
+  .video-panel:hover .media-toggle[aria-pressed="true"],
+  .media-toggle[aria-pressed="true"]:focus-visible { opacity: 1; }
+  .media-toggle .icon-play { margin-left: 7%; }
+  .media-toggle .icon-pause,
+  .media-toggle .icon-rewind { display: none; }
+  .media-toggle[aria-pressed="true"] .icon-play { display: none; }
+  .media-toggle[aria-pressed="true"] .icon-pause { display: block; }
+  /* at end of video: swap to a rewind/replay glyph */
+  .media-toggle[data-ended="true"] .icon-play,
+  .media-toggle[data-ended="true"] .icon-pause { display: none; }
+  .media-toggle[data-ended="true"] .icon-rewind { display: block; }
+
+  /* seek bar: chunky white pill pinned to the bottom of the hero frame */
+  .scrub-wrap {
+    position: absolute;
+    left: clamp(28px, 4vw, 48px);
+    right: clamp(28px, 4vw, 48px);
+    bottom: clamp(20px, 3vh, 34px);
+    z-index: 3;
+    /* hidden until playback has started */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .scrub-wrap.started {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* custom thumb: positioned so its center reaches 0%–100% of the track */
+  .scrub-thumb {
+    position: absolute;
+    top: 50%;
+    left: var(--thumb-pos, 0%);
+    transform: translate(-50%, -50%);
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+  }
+
+  /* time readout that hovers above the thumb */
+  .scrub-time {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: var(--thumb-pos, 0%);
+    transform: translateX(-50%);
+    padding: 3px 7px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    color: #fff;
+    background: rgba(10, 10, 10, 0.72);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.18s ease;
+  }
+  /* reveal while pointing at the bar or actively scrubbing */
+  .scrub-wrap:hover .scrub-time,
+  .media-scrubber:focus-visible ~ .scrub-time,
+  .scrub-time[data-scrubbing="true"] { opacity: 1; }
+
+  .media-scrubber {
+    display: block;
+    width: 100%;
+    height: 26px;
+    margin: 0;
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  /* track + filled progress via a gradient driven by --progress */
+  .media-scrubber::-webkit-slider-runnable-track {
+    height: 8px;
+    border-radius: 999px;
+    background: linear-gradient(
+      to right,
+      #ffffff 0%,
+      #ffffff var(--progress, 0%),
+      rgba(255, 255, 255, 0.35) var(--progress, 0%),
+      rgba(255, 255, 255, 0.35) 100%);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
+  }
+  .media-scrubber::-moz-range-track {
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.35);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
+  }
+  .media-scrubber::-moz-range-progress {
+    height: 8px;
+    border-radius: 999px;
+    background: #ffffff;
+  }
+  /* native thumb kept for dragging but invisible — a custom thumb is drawn
+     so its center can reach the very ends of the track */
+  .media-scrubber::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 26px;
+    height: 26px;
+    margin-top: -9px;
+    border-radius: 50%;
+    background: transparent;
+  }
+  .media-scrubber::-moz-range-thumb {
+    width: 26px;
+    height: 26px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+  }
+  .media-scrubber:focus-visible { outline: none; }
+  .media-scrubber:focus-visible::-webkit-slider-runnable-track { outline: 2px solid var(--accent); outline-offset: 6px; }
 
   .name {
     font-family: var(--display);
@@ -67,12 +240,22 @@
   .name-block {
     text-align: center;
     margin: auto 0;
+    /* nudge below the face in the hero frame */
+    transform: translateY(14vh);
+    text-shadow: 0 2px 24px rgba(0, 0, 0, 0.55);
+  }
+  /* on desktop the cover-crop puts the title over the laptop — drop it lower
+     so it clears the typing (mobile crop differs and is left as-is) */
+  @media (min-width: 881px) {
+    .name-block { transform: translateY(19vh); }
   }
 
   .socials {
     display: flex;
     gap: clamp(20px, 2.2vw, 32px);
     margin-top: auto;
+    /* leave room below for the seek bar + thumb so it never overlaps the links */
+    margin-bottom: clamp(40px, 5vh, 56px);
     padding-top: clamp(32px, 5vh, 56px);
     color: var(--accent);
     align-items: center;
@@ -87,6 +270,7 @@
     align-items: center;
     justify-content: center;
     transition: transform 0.15s ease;
+    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.5));
   }
   .socials a:hover { transform: translateY(-2px); }
   .socials svg { width: 100%; height: 100%; }
@@ -160,6 +344,24 @@
   .portfolio-btn svg { width: 18px; height: 18px; }
   .portfolio-btn:hover { transform: translateY(-2px); }
 
+  /* discreet hero-video credit, tucked in the corner of the frame */
+  .credit {
+    position: absolute;
+    top: 12px;
+    left: 14px;
+    z-index: 4;
+    font-size: 10px;
+    letter-spacing: 0.02em;
+    color: rgba(255, 255, 255, 0.09);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .credit:hover, .credit:focus-visible { color: rgba(255, 255, 255, 0.6); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .media-toggle, .socials a, .portfolio-btn, .credit { transition: none; }
+  }
+
   @media (max-width: 880px) {
     html, body { height: auto; overflow: auto; }
     .frame { grid-template-columns: 1fr; height: auto; min-height: 100vh; padding: 16px; }
@@ -173,8 +375,50 @@
 <main class="frame">
 
   <section class="video-panel">
+
+    <a class="credit" href="https://clarkjoe.com" target="_blank" rel="noopener">Video: Joe Clark</a>
+
+    <video
+      class="hero-media"
+      id="heroVideo"
+      poster="poster.jpg"
+      preload="metadata"
+      muted
+      playsinline
+      tabindex="-1"
+      aria-hidden="true">
+      <source src="hero.mp4" type="video/mp4" />
+    </video>
+    <div class="hero-scrim"></div>
+
+    <button class="media-toggle" id="mediaToggle" type="button" aria-pressed="false" aria-label="Play background video">
+      <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M8 5v14l11-7z"/>
+      </svg>
+      <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/>
+      </svg>
+      <svg class="icon-rewind" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
+      </svg>
+    </button>
+
+    <div class="scrub-wrap">
+      <input
+        class="media-scrubber"
+        id="mediaScrubber"
+        type="range"
+        min="0"
+        max="1000"
+        value="0"
+        step="1"
+        aria-label="Seek video" />
+      <span class="scrub-thumb" aria-hidden="true"></span>
+      <span class="scrub-time" id="scrubTime" aria-hidden="true">0s</span>
+    </div>
+
     <div class="name-block">
-      <h1 class="name">Beckett Frey<br />(he/him)</h1>
+      <h1 class="name">Beckett Frey</h1>
       <p class="role">Software Engineer</p>
     </div>
 
@@ -212,7 +456,7 @@
       <p class="label">About Me</p>
       <h2 class="heading">Building software for the public good</h2>
       <p class="body-text">
-        I'm a Research Intern at the Waisman Center (UW-Madison) where I create tools and data systems to aid researchers as part of a 20+ year speech data collection effort with the WISC Lab. Outside of that I've been volunteering for environmental justice. In January I found mentorship and a strong community at EDGI (Environmental Data & Governance Initiative) after connecting with a maintainer through open-source. Open to roles in Software Engineering, Healthcare, or Environmental Justice.
+        I'm a Research Intern at the Waisman Center (UW-Madison) where I create tools and data systems to aid researchers as part of a 20+ year speech data collection effort with the WISC Lab. Outside of that I've been volunteering for environmental justice. In January I found mentorship and a strong community at EDGI (Environmental Data &amp; Governance Initiative) after connecting with a maintainer through open-source. Open to roles in Software Engineering, Healthcare, or Environmental Justice.
       </p>
     </div>
     <div class="section">
@@ -273,6 +517,156 @@
   </section>
 
 </main>
+
+<script>
+  (function () {
+    var video = document.getElementById('heroVideo');
+    var toggle = document.getElementById('mediaToggle');
+    var scrubber = document.getElementById('mediaScrubber');
+    var scrubWrap = scrubber.parentElement;
+    var scrubTime = document.getElementById('scrubTime');
+    var seeking = false;
+    var pendingSeek = null; // fraction to seek to once metadata is available
+    var START = 6.15;       // playback + scrubber begin at this timestamp
+
+    function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
+    // seekable clip runs START..duration, mapped to 0..1 for the scrubber
+    function effDur() { return Math.max(0.001, (video.duration || 0) - START); }
+    function timeToFrac(t) { return video.duration ? clamp((t - START) / effDur(), 0, 1) : 0; }
+    function fracToTime(f) { return START + f * effDur(); }
+
+    function fmt(secs) {
+      return Math.max(0, Math.floor(secs || 0)) + 's';
+    }
+
+    // drive the custom thumb + time bubble; center reaches the full 0%–100%
+    function positionThumb(frac) {
+      scrubWrap.style.setProperty('--thumb-pos', (frac * 100) + '%');
+    }
+
+    function sync() {
+      var playing = !video.paused && !video.ended;
+      toggle.setAttribute('aria-pressed', playing ? 'true' : 'false');
+      if (video.ended) {
+        toggle.setAttribute('aria-label', 'Replay background video');
+      } else {
+        toggle.setAttribute('aria-label', playing ? 'Pause background video' : 'Play background video');
+      }
+    }
+
+    function renderProgress() {
+      var frac = timeToFrac(video.currentTime);
+      scrubWrap.style.setProperty('--progress', (frac * 100) + '%');
+      positionThumb(frac);
+      scrubTime.textContent = fmt(video.currentTime - START);
+    }
+
+    function markEnded() {
+      if (!video.paused) { video.pause(); }
+      toggle.setAttribute('data-ended', 'true');
+      // snap the thumb + fill to the very end
+      scrubber.value = 1000;
+      scrubWrap.style.setProperty('--progress', '100%');
+      positionThumb(1);
+      sync();
+    }
+
+    // smooth per-frame updates while playing (timeupdate only fires ~4x/sec)
+    var rafId = null;
+    function loop() {
+      if (!seeking) {
+        renderProgress();
+        if (video.duration) {
+          scrubber.value = Math.round(timeToFrac(video.currentTime) * 1000);
+        }
+      }
+      // safety net for clips that stall a hair short and never fire 'ended'
+      if (!video.paused && video.duration && video.currentTime >= video.duration - 0.03) {
+        markEnded();
+      }
+      rafId = (!video.paused && !video.ended) ? requestAnimationFrame(loop) : null;
+    }
+    function startLoop() {
+      if (rafId == null) { rafId = requestAnimationFrame(loop); }
+    }
+
+    video.addEventListener('timeupdate', function () {
+      if (seeking) return;
+      renderProgress();
+      if (video.duration) {
+        scrubber.value = Math.round(timeToFrac(video.currentTime) * 1000);
+      }
+    });
+
+    scrubber.addEventListener('input', function () {
+      seeking = true;
+      scrubTime.setAttribute('data-scrubbing', 'true');
+      // ensure the video is loaded so we have a duration to seek within
+      if (!video.duration && video.preload !== 'auto') {
+        video.preload = 'auto';
+        video.load();
+      }
+      var frac = scrubber.value / 1000;
+      // scrubbing back off the end clears the ended/rewind state
+      if (frac < 0.999 && toggle.hasAttribute('data-ended')) {
+        toggle.removeAttribute('data-ended');
+        sync();
+      }
+      if (video.duration) {
+        video.currentTime = fracToTime(frac);
+        scrubTime.textContent = fmt(frac * effDur());
+        pendingSeek = null;
+      } else {
+        // metadata not loaded yet — remember where to seek once it is
+        pendingSeek = frac;
+      }
+      // reflect the drag position immediately even before metadata resolves
+      scrubWrap.style.setProperty('--progress', (frac * 100) + '%');
+      positionThumb(frac);
+    });
+    scrubber.addEventListener('change', function () {
+      seeking = false;
+      scrubTime.removeAttribute('data-scrubbing');
+    });
+
+    toggle.addEventListener('click', function () {
+      if (toggle.hasAttribute('data-ended')) {
+        // replay from the clip start (6s)
+        video.currentTime = START;
+        toggle.removeAttribute('data-ended');
+      }
+      if (video.paused) {
+        video.preload = 'auto';
+        var p = video.play();
+        if (p && p.catch) { p.catch(function () { sync(); }); }
+      } else {
+        video.pause();
+      }
+    });
+
+    video.addEventListener('loadedmetadata', function () {
+      if (pendingSeek != null) {
+        // apply a seek requested before the video had a duration
+        video.currentTime = fracToTime(pendingSeek);
+        pendingSeek = null;
+      } else if (video.currentTime < START) {
+        // begin the clip at the 6s mark (matches the poster)
+        video.currentTime = START;
+      }
+      renderProgress();
+    });
+
+    video.addEventListener('play', function () {
+      toggle.removeAttribute('data-ended');
+      scrubWrap.classList.add('started');
+      sync();
+      startLoop();
+    });
+    video.addEventListener('pause', sync);
+    video.addEventListener('ended', markEnded);
+    sync();
+  })();
+</script>
 
 </body>
 </html>
