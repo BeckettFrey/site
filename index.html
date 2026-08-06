@@ -173,6 +173,14 @@
   .entry ul { padding-left: 20px; }
   .entry li { font-size: 15px; line-height: 1.55; }
 
+  .entry.project { grid-template-columns: 1fr; }
+  .entry .title a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .entry .title a:hover { opacity: 0.75; }
+
   .portfolio-btn {
     margin-top: auto;
     display: flex;
@@ -194,6 +202,23 @@
   }
   .portfolio-btn svg { width: 18px; height: 18px; }
   .portfolio-btn:hover { transform: translateY(-2px); }
+
+  /* split resume bar: full-width view zone + icon download zone */
+  .resume-split { padding: 0; }
+  .resume-split a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+    text-decoration: none;
+    padding: 18px;
+  }
+  .resume-split a:hover { background: var(--ink-soft); }
+  .resume-split .resume-view { flex: 1; }
+  .resume-split .resume-download {
+    padding: 18px 22px;
+    border-left: 1px solid rgba(232, 235, 228, 0.25);
+  }
 
   /* discreet hero-video credit, tucked in the corner of the frame */
   .credit {
@@ -274,8 +299,10 @@
       <p class="label">About Me</p>
       <h2 class="heading">Building software for the public good</h2>
       <p class="body-text">
+        <p class="body-text">Early on, I realized I didn't want to become exceptionally good at one thing, I wanted to become exceptionally good at learning new things.  
+          That mindset led me to software engineering, where every project is an opportunity to solve a new kind of problem. Today, I build software across AI, research, and public-interest technology, and I'm seeking opportunities where technical work creates measurable impact.
       </p>
-    </div>
+        </div>
     <div class="section">
       <p class="label">Education</p>
       <div class="entry">
@@ -292,6 +319,16 @@
 
     <div class="section">
       <p class="label">Experience</p>
+
+      <div class="entry">
+        <span class="year">2026</span>
+        <div>
+          <div class="title">Consulting and Development</div>
+          <ul>
+            <li>Contracting for startups &amp; small businesses</li>
+          </ul>
+        </div>
+      </div>
 
       <div class="entry">
         <span class="year">2026</span>
@@ -324,9 +361,50 @@
       </div>
     </div>
 
-    <a class="portfolio-btn" id="resumeBtn" href="https://raw.githubusercontent.com/beckettfrey/latex-resume/main/resume.pdf" download>
-      <span>Resume</span>
-    </a>
+    <div class="section">
+      <p class="label">Projects</p>
+
+      <div class="entry project">
+        <div>
+          <div class="title"><a href="https://github.com/beckettfrey/doc-weaver-agent" target="_blank" rel="noopener">AI Document Generation</a></div>
+          <ul>
+            <li>Per-placeholder document generation, queued by batch</li>
+            <li>Novel technique for locking down hierarchy in AI-generated documents</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="entry project">
+        <div>
+          <div class="title"><a href="https://voxkit-web.vercel.app/" target="_blank" rel="noopener">Phonetic Research Application</a></div>
+          <ul>
+            <li>Desktop app unifying AI/ML tools for speech researchers</li>
+            <li>NIH-funded work; paper accepted to Interspeech Show &amp; Tell</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="entry project">
+        <div>
+          <div class="title"><a href="https://pypi.org/project/shred-guard/" target="_blank" rel="noopener">Data Security Tooling</a></div>
+          <ul>
+            <li>Scanner used to safely open-source legacy code</li>
+            <li>Caught a real PII exposure before a lab repo went public</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="portfolio-btn resume-split">
+      <a class="resume-view" href="https://cdn.jsdelivr.net/gh/beckettfrey/latex-resume@main/resume.pdf" target="_blank" rel="noopener">
+        <span>View Resume</span>
+      </a>
+      <a class="resume-download" id="resumeBtn" href="https://raw.githubusercontent.com/beckettfrey/latex-resume/main/resume.pdf" download aria-label="Download resume">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 3v12m0 0 5-5m-5 5-5-5"/><path d="M4 21h16"/>
+        </svg>
+      </a>
+    </div>
 
   </section>
 
