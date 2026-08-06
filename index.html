@@ -412,6 +412,15 @@
 
 <script>
   (function () {
+    // Bust returning visitors' 7-day browser cache of the jsDelivr PDF: a
+    // query param bucketed to 6-hour windows makes the URL unique per
+    // window, so a stale copy is served for at most 6 hours after the
+    // resume changes.
+    var resumeView = document.querySelector('.resume-view');
+    if (resumeView) {
+      resumeView.href += '?v=' + Math.floor(Date.now() / (6 * 60 * 60 * 1000));
+    }
+
     // Download the resume with a dated filename: beckettfrey_resume_MM-DD-YY.pdf
     var resumeBtn = document.getElementById('resumeBtn');
     if (resumeBtn) {
