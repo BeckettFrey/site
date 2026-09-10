@@ -220,11 +220,27 @@
     border-left: 1px solid rgba(232, 235, 228, 0.25);
   }
 
-  /* discreet hero-video credit, tucked in the corner of the frame */
+  /* availability tag, flush to the hero's top-left corner like a label on a photo */
+  .status-badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 4;
+    padding: 12px 18px;
+    background: var(--accent);
+    color: var(--ink);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* discreet hero-video credit, tucked in the opposite corner from the badge */
   .credit {
     position: absolute;
     top: 12px;
-    left: 14px;
+    right: 14px;
     z-index: 4;
     font-size: 10px;
     letter-spacing: 0.02em;
@@ -251,6 +267,8 @@
 <main class="frame">
 
   <section class="video-panel">
+
+    <div class="status-badge">Open to Projects</div>
 
     <a class="credit" href="https://clarkjoe.com" target="_blank" rel="noopener">Video: Joe Clark</a>
 
@@ -297,12 +315,10 @@
 
     <div class="section">
       <p class="label">About Me</p>
-      <h2 class="heading">Building software for the public good</h2>
-      <p class="body-text">
-        <p class="body-text">Early on, I realized I didn't want to become exceptionally good at one thing, I wanted to become exceptionally good at learning new things.  
-          That mindset led me to software engineering, where every project is an opportunity to solve a new kind of problem. Today, I build software across AI, research, and public-interest technology, and I'm seeking opportunities where technical work creates measurable impact.
-      </p>
-        </div>
+      <h2 class="heading">Most good ideas are one engineer away</h2>
+        <p class="body-text">
+  Early on, I realized I didn't want to become exceptionally good at one thing. I wanted to become exceptionally good at learning new things. That mindset led me to software, where every project is a new kind of problem. So far, the work I've enjoyed most has been for people who know exactly what needs to exist and can't build it themselves. A non-technical founder with a burning idea. A clinical lab with world-class expertise in speech and none in software. A nonprofit with an essential tool and a maintainer determined to keep it running. If you think I'd be a good fit for your project, get in touch.
+</p></div>
     <div class="section">
       <p class="label">Education</p>
       <div class="entry">
